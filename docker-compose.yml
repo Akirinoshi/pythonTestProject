@@ -1,0 +1,36 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: flask run --debug --host 0.0.0.0 --port 80
+    ports:
+      - "80:80"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      - FLASK_APP=app
+      - FLASK_ENV=development
+      - PYTHONUNBUFFERED=1  # forces the stdout and stderr streams to be unbuffered
+
+  db:
+    image: mysql:5.7
+    restart: always
+    platform: linux/x86_64
+    command: mysqld --sql_mode=""
+    environment:
+      - MYSQL_DATABASE=test_db
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - '3306:3306'
+    volumes:
+      - .:/app
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+
